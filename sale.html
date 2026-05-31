@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sale - Modern Fashion Store</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="index.html" class="text-3xl font-['Pacifico'] text-blue-500 mr-10">logo</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-900 font-medium hover:text-blue-500 transition-colors">Home</a>
+                    <a href="categories.html" class="text-gray-900 font-medium hover:text-blue-500 transition-colors">Categories</a>
+                    <a href="new-arrivals.html" class="text-gray-900 font-medium hover:text-blue-500 transition-colors">New Arrivals</a>
+                    <a href="sale.html" class="text-blue-500 font-medium border-b-2 border-blue-500">Sale</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" class="w-40 md:w-64 pl-10 pr-4 py-2 bg-gray-50 rounded-full border-none text-sm" placeholder="Search products...">
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <i class="ri-search-line text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="relative">
+                    <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+                        <i class="ri-shopping-bag-line text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white rounded-full text-xs flex items-center justify-center">0</span>
+                    </button>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100">
+                    <i class="ri-user-line text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center text-sm">
+                <a href="index.html" class="text-gray-500 hover:text-blue-500">Home</a>
+                <span class="mx-2 text-gray-400">/</span>
+                <span class="text-gray-900 font-medium">Sale</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <section class="relative h-[400px] bg-gray-900">
+        <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200" alt="Summer Sale" class="w-full h-full object-cover opacity-75">
+        <div class="absolute inset-0 flex items-center">
+            <div class="container mx-auto px-4">
+                <div class="max-w-2xl">
+                    <span class="text-white text-sm font-medium bg-red-500 px-3 py-1 rounded-full">Limited Time</span>
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mt-4 mb-4">Summer Sale 2024</h1>
+                    <p class="text-white/90 text-lg mb-8">Up to 70% off on selected items. Don't miss out on these amazing deals!</p>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="text-center">
+                            <span class="text-white text-2xl font-bold" id="days">00</span>
+                            <span class="text-white/80 text-sm block">Days</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-white text-2xl font-bold" id="hours">00</span>
+                            <span class="text-white/80 text-sm block">Hours</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-white text-2xl font-bold" id="minutes">00</span>
+                            <span class="text-white/80 text-sm block">Minutes</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-white text-2xl font-bold" id="seconds">00</span>
+                            <span class="text-white/80 text-sm block">Seconds</span>
+                        </div>
+                    </div>
+                    <button class="bg-white text-gray-900 px-8 py-3 rounded font-medium hover:bg-gray-100 transition-colors">
+                        Shop Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sale Categories -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8">Shop by Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Women's Sale -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-48">
+                        <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400" alt="Women's Sale" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="text-white text-xl font-bold">Women's Sale</h3>
+                            <p class="text-white/80 text-sm">Up to 60% off</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Men's Sale -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-48">
+                        <img src="https://images.unsplash.com/photo-1516826957135-700dedea698c?w=400" alt="Men's Sale" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="text-white text-xl font-bold">Men's Sale</h3>
+                            <p class="text-white/80 text-sm">Up to 50% off</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessories Sale -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-48">
+                        <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400" alt="Accessories Sale" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="text-white text-xl font-bold">Accessories</h3>
+                            <p class="text-white/80 text-sm">Up to 70% off</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shoes Sale -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-48">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Shoes Sale" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
+                            <h3 class="text-white text-xl font-bold">Shoes</h3>
+                            <p class="text-white/80 text-sm">Up to 55% off</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Sale Items -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8">Featured Sale Items</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Sale Product 1 -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-96">
+                        <span class="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-50%</span>
+                        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500" alt="Leather Jacket" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-gray-900 px-6 py-2 rounded font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform">
+                                Quick View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900">Premium Leather Jacket</h3>
+                        <p class="text-gray-500 text-sm mt-1">Genuine leather, classic design</p>
+                        <div class="flex items-center mt-4">
+                            <span class="text-red-500 font-bold">$149.99</span>
+                            <span class="ml-2 text-gray-500 line-through text-sm">$299.99</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sale Product 2 -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-96">
+                        <span class="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-40%</span>
+                        <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500" alt="Summer Dress" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-gray-900 px-6 py-2 rounded font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform">
+                                Quick View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900">Floral Summer Dress</h3>
+                        <p class="text-gray-500 text-sm mt-1">Light and breezy for summer</p>
+                        <div class="flex items-center mt-4">
+                            <span class="text-red-500 font-bold">$53.99</span>
+                            <span class="ml-2 text-gray-500 line-through text-sm">$89.99</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sale Product 3 -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-96">
+                        <span class="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-60%</span>
+                        <img src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?w=500" alt="Designer Bag" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-gray-900 px-6 py-2 rounded font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform">
+                                Quick View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900">Designer Tote Bag</h3>
+                        <p class="text-gray-500 text-sm mt-1">Premium leather, spacious design</p>
+                        <div class="flex items-center mt-4">
+                            <span class="text-red-500 font-bold">$79.99</span>
+                            <span class="ml-2 text-gray-500 line-through text-sm">$199.99</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sale Product 4 -->
+                <div class="bg-white rounded-lg overflow-hidden group">
+                    <div class="relative h-96">
+                        <span class="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">-45%</span>
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" alt="Sneakers" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button class="bg-white text-gray-900 px-6 py-2 rounded font-medium transform -translate-y-2 group-hover:translate-y-0 transition-transform">
+                                Quick View
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900">Limited Edition Sneakers</h3>
+                        <p class="text-gray-500 text-sm mt-1">Exclusive design, premium comfort</p>
+                        <div class="flex items-center mt-4">
+                            <span class="text-red-500 font-bold">$87.99</span>
+                            <span class="ml-2 text-gray-500 line-through text-sm">$159.99</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Special Offers -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8">Special Offers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Offer 1 -->
+                <div class="bg-white rounded-lg overflow-hidden">
+                    <div class="grid md:grid-cols-2">
+                        <div class="p-8">
+                            <span class="text-red-500 text-sm font-medium">Limited Time</span>
+                            <h3 class="text-2xl font-bold mt-2 mb-4">Buy 2 Get 1 Free</h3>
+                            <p class="text-gray-600 mb-6">On all summer collection items. Mix and match any items.</p>
+                            <button class="bg-gray-900 text-white px-6 py-2 rounded font-medium hover:bg-blue-500 transition-colors">
+                                Shop Now
+                            </button>
+                        </div>
+                        <div class="relative h-64 md:h-full">
+                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400" alt="Special Offer" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offer 2 -->
+                <div class="bg-white rounded-lg overflow-hidden">
+                    <div class="grid md:grid-cols-2">
+                        <div class="p-8">
+                            <span class="text-red-500 text-sm font-medium">Flash Sale</span>
+                            <h3 class="text-2xl font-bold mt-2 mb-4">Extra 20% Off</h3>
+                            <p class="text-gray-600 mb-6">Use code SUMMER20 at checkout. Valid on all sale items.</p>
+                            <button class="bg-gray-900 text-white px-6 py-2 rounded font-medium hover:bg-blue-500 transition-colors">
+                                Shop Now
+                            </button>
+                        </div>
+                        <div class="relative h-64 md:h-full">
+                            <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=400" alt="Flash Sale" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">About Us</h3>
+                    <p class="text-gray-400">Modern Fashion Store is your destination for the latest trends in fashion. We offer quality products at competitive prices.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="categories.html" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                        <li><a href="new-arrivals.html" class="text-gray-400 hover:text-white transition-colors">New Arrivals</a></li>
+                        <li><a href="sale.html" class="text-gray-400 hover:text-white transition-colors">Sale</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-facebook-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-instagram-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-twitter-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-pinterest-fill text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2024 Modern Fashion Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Countdown Timer
+        function updateCountdown() {
+            const endDate = new Date('2024-07-31T23:59:59').getTime();
+            const now = new Date().getTime();
+            const distance = endDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+    </script>
+</body>
+</html> 

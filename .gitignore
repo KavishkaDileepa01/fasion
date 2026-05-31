@@ -1,0 +1,7 @@
+.venv/
+.history/
+.snapshots/
+__pycache__/
+*.py[cod]
+.env
+*.db

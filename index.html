@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Fashion Store</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        /* Your existing styles here */
+        .cart-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
+        .product-3d-view {
+            width: 100%;
+            height: 300px;
+            background: #f3f4f6;
+        }
+        .quick-view-modal {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease;
+        }
+        .quick-view-modal.open {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .product-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        .size-selector {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover .size-selector {
+            display: block;
+            transform: translateY(0);
+        }
+        .ar-view-button {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .ar-view-button:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Your existing HTML content here -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="#" class="text-3xl font-['Pacifico'] text-primary mr-10">logo</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-900 font-medium hover:text-primary transition-colors">Home</a>
+                    <a href="categories.html" class="text-gray-900 font-medium hover:text-primary transition-colors">Categories</a>
+                    <a href="new-arrivals.html" class="text-gray-900 font-medium hover:text-primary transition-colors">New Arrivals</a>
+                    <a href="#" class="text-gray-900 font-medium hover:text-primary transition-colors">Sale</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative">
+                    <input type="text" class="search-input w-40 md:w-64 pl-10 pr-4 py-2 bg-gray-50 rounded-full border-none text-sm" placeholder="Search products...">
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400">
+                        <i class="ri-search-line"></i>
+                    </div>
+                </div>
+                <div class="relative">
+                    <button id="cartButton" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
+                        <i class="ri-shopping-bag-line text-xl"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white rounded-full text-xs flex items-center justify-center">0</span>
+                    </button>
+                </div>
+                <div class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
+                    <i class="ri-user-line text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Shopping Cart</h3>
+                <button id="closeCart" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            <div id="cartItems" class="flex-grow overflow-y-auto space-y-4">
+                <!-- Cart items will be added here dynamically -->
+            </div>
+            <div class="pt-6 border-t border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-600">Subtotal</span>
+                    <span id="cartSubtotal" class="font-semibold">$0.00</span>
+                </div>
+                <button class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-blue-600 transition-colors">
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="quick-view-modal fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl bg-white rounded-lg p-6">
+            <button id="closeQuickView" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="product-3d-view" id="product3DView">
+                    <!-- 3D product view will be rendered here -->
+                </div>
+                <div>
+                    <h3 id="quickViewTitle" class="text-2xl font-bold mb-2"></h3>
+                    <p id="quickViewPrice" class="text-primary text-xl font-semibold mb-4"></p>
+                    <p id="quickViewDescription" class="text-gray-600 mb-6"></p>
+                    <div class="mb-6">
+                        <h4 class="font-medium mb-2">Size</h4>
+                        <div class="flex flex-wrap gap-2" id="quickViewSizes">
+                            <!-- Sizes will be added here dynamically -->
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <h4 class="font-medium mb-2">Color</h4>
+                        <div class="flex flex-wrap gap-2" id="quickViewColors">
+                            <!-- Colors will be added here dynamically -->
+                        </div>
+                    </div>
+                    <button class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-blue-600 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen bg-white">
+        <div class="container mx-auto px-4 h-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 h-full items-center gap-12">
+                <div class="flex flex-col justify-center max-w-xl">
+                    <h1 class="text-[2.75rem] leading-tight font-bold text-gray-900 mb-6">
+                        Discover Your Style<br>
+                        For Every Season
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8">
+                        Explore our latest collection featuring premium quality apparel designed for comfort and style.
+                    </p>
+                    <div class="flex gap-4">
+                        <button class="bg-blue-500 text-white px-8 py-3 rounded font-medium hover:bg-blue-600 transition-colors">
+                            Shop Now
+                        </button>
+                        <button class="bg-white text-gray-900 px-8 py-3 rounded font-medium border border-gray-300 hover:bg-gray-50 transition-colors">
+                            View Collections
+                        </button>
+                    </div>
+                </div>
+                <div class="hidden lg:block relative h-full">
+                    <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200" alt="Modern Store Interior" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop By Category -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-12">Shop By Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Category 1 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400" alt="Women's Sets" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Women's Sets</h3>
+                </a>
+
+                <!-- Category 2 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" alt="Jackets" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Jackets</h3>
+                </a>
+
+                <!-- Category 3 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400" alt="Denim" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Denim</h3>
+                </a>
+
+                <!-- Category 4 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1606297199333-e93f7d726cab?w=400" alt="Knitwear" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Knitwear</h3>
+                </a>
+
+                <!-- Category 5 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1603251579431-8041402bdeda?w=400" alt="Shirts" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Shirts</h3>
+                </a>
+
+                <!-- Category 6 -->
+                <a href="categories.html" class="group">
+                    <div class="aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400" alt="Shoes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <h3 class="mt-3 text-center text-gray-900 font-medium">Shoes</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Products -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-2xl font-bold">Trending Now</h2>
+                <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View All</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Trending Product 1 -->
+                <div class="bg-white group">
+                    <div class="aspect-[3/4] overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400" alt="Trending 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <span class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 text-sm font-medium rounded">-20%</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900">Premium Wool Coat</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="text-blue-500 font-bold">$199.99</span>
+                            <span class="ml-2 text-gray-500 line-through text-sm">$249.99</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More trending products... -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Collections -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-10">Featured Collections</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Collection 1 -->
+                <div class="relative h-[500px] group overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800" alt="Summer Collection" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                        <h3 class="text-white text-2xl font-bold mb-2">Summer Collection</h3>
+                        <p class="text-white/80 mb-4">Light and breezy pieces for warm days</p>
+                        <button class="bg-white text-gray-900 px-6 py-2 rounded w-fit hover:bg-gray-100 transition-colors">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+                <!-- Collection 2 -->
+                <div class="relative h-[500px] group overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800" alt="Autumn Essentials" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                        <h3 class="text-white text-2xl font-bold mb-2">Autumn Essentials</h3>
+                        <p class="text-white/80 mb-4">Cozy and stylish for the season ahead</p>
+                        <button class="bg-white text-gray-900 px-6 py-2 rounded w-fit hover:bg-gray-100 transition-colors">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Special Offers -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="bg-blue-500 rounded-lg overflow-hidden">
+                <div class="grid md:grid-cols-2 items-center">
+                    <div class="p-12 text-white">
+                        <h2 class="text-3xl font-bold mb-4">Summer Sale</h2>
+                        <p class="text-xl mb-6">Get up to 50% off on selected items</p>
+                        <ul class="space-y-2 mb-8">
+                            <li class="flex items-center">
+                                <i class="ri-check-line mr-2"></i>
+                                <span>Premium quality materials</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line mr-2"></i>
+                                <span>Free shipping on orders over $100</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line mr-2"></i>
+                                <span>30-day return policy</span>
+                            </li>
+                        </ul>
+                        <button class="bg-white text-blue-500 px-8 py-3 rounded font-medium hover:bg-gray-100 transition-colors">
+                            Shop Sale
+                        </button>
+                    </div>
+                    <div class="relative h-96 md:h-full">
+                        <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=800" alt="Sale" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Feed -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl font-bold mb-2">Follow Us on Instagram</h2>
+                <p class="text-gray-600">@modernfashionstore</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=300" alt="Instagram 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1475180098004-ca77a66827be?w=300" alt="Instagram 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=300" alt="Instagram 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=300" alt="Instagram 4" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=300" alt="Instagram 5" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+                <a href="#" class="aspect-square overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=300" alt="Instagram 6" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-4">Subscribe to Our Newsletter</h2>
+                <p class="text-gray-600 mb-8">Stay updated with our latest collections and exclusive offers.</p>
+                <form class="flex gap-4">
+                    <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded border border-gray-300 focus:outline-none focus:border-blue-500">
+                    <button type="submit" class="bg-blue-500 text-white px-8 py-3 rounded font-medium hover:bg-blue-600 transition-colors">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">About Us</h3>
+                    <p class="text-gray-400">Modern Fashion Store is your destination for the latest trends in fashion. We offer quality products at competitive prices.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-facebook-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-instagram-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-twitter-fill text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="ri-pinterest-fill text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2024 Modern Fashion Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Updated product data with reliable image URLs
+        const products = [
+            {
+                id: 1,
+                name: "Classic Denim Jacket",
+                price: 89.99,
+                category: "Jackets",
+                image: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500",
+                description: "Premium quality, perfect for any season",
+                sizes: ["S", "M", "L", "XL"],
+                colors: ["Blue", "Black"],
+                material: "Denim"
+            },
+            {
+                id: 2,
+                name: "Essential White Tee",
+                price: 29.99,
+                category: "T-shirts",
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+                description: "100% organic cotton, ultra-soft",
+                sizes: ["XS", "S", "M", "L", "XL"],
+                colors: ["White"],
+                material: "Cotton"
+            },
+            {
+                id: 3,
+                name: "Leather Biker Jacket",
+                price: 199.99,
+                category: "Jackets",
+                image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
+                description: "Genuine leather, timeless style",
+                sizes: ["S", "M", "L", "XL"],
+                colors: ["Black", "Brown"],
+                material: "Leather"
+            },
+            {
+                id: 4,
+                name: "Slim Fit Chinos",
+                price: 59.99,
+                category: "Pants",
+                image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500",
+                description: "Comfortable and stylish everyday pants",
+                sizes: ["30", "32", "34", "36"],
+                colors: ["Khaki", "Navy", "Black"],
+                material: "Cotton"
+            }
+        ];
+
+        // Initialize 3D viewer
+        function init3DViewer() {
+            const container = document.getElementById('product3DView');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(0, 1, 1);
+            scene.add(light);
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+            
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
+
+        // Shopping cart functionality
+        const cart = {
+            items: [],
+            addItem: function(product) {
+                this.items.push(product);
+                this.updateUI();
+            },
+            removeItem: function(index) {
+                this.items.splice(index, 1);
+                this.updateUI();
+            },
+            updateUI: function() {
+                const cartItems = document.getElementById('cartItems');
+                const cartCount = document.getElementById('cartCount');
+                const cartSubtotal = document.getElementById('cartSubtotal');
+                
+                cartItems.innerHTML = '';
+                let subtotal = 0;
+                
+                this.items.forEach((item, index) => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center space-x-4';
+                    itemElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded">
+                        <div class="flex-grow">
+                            <h4 class="font-medium">${item.name}</h4>
+                            <p class="text-gray-600">$${item.price}</p>
+                        </div>
+                        <button onclick="cart.removeItem(${index})" class="text-gray-400 hover:text-gray-600">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    `;
+                    cartItems.appendChild(itemElement);
+                    subtotal += item.price;
+                });
+                
+                cartCount.textContent = this.items.length;
+                cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            }
+        };
+
+        // Quick view functionality
+        function showQuickView(product) {
+            const modal = document.getElementById('quickViewModal');
+            const title = document.getElementById('quickViewTitle');
+            const price = document.getElementById('quickViewPrice');
+            const description = document.getElementById('quickViewDescription');
+            const sizes = document.getElementById('quickViewSizes');
+            const colors = document.getElementById('quickViewColors');
+            
+            title.textContent = product.name;
+            price.textContent = `$${product.price}`;
+            description.textContent = product.description;
+            
+            sizes.innerHTML = product.sizes.map(size => `
+                <button class="px-4 py-2 border border-gray-300 rounded hover:border-primary">
+                    ${size}
+                </button>
+            `).join('');
+            
+            colors.innerHTML = product.colors.map(color => `
+                <button class="w-8 h-8 rounded-full" style="background-color: ${color.toLowerCase()}"></button>
+            `).join('');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('open'), 10);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render products
+            const productGrid = document.getElementById('productGrid');
+            console.log('Product grid element:', productGrid); // Debug log
+            
+            if (productGrid) {
+                productGrid.innerHTML = ''; // Clear existing content
+                products.forEach(product => {
+                    console.log('Rendering product:', product.name); // Debug log
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300';
+                    productCard.innerHTML = `
+                        <div class="relative h-80 overflow-hidden">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300">
+                            <button class="quick-view-button absolute top-4 left-4 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-100">
+                                <i class="ri-eye-line text-gray-700"></i>
+                            </button>
+                            <button class="ar-view-button">
+                                <i class="ri-augmented-reality-line"></i>
+                            </button>
+                            <div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                                <p class="text-white text-sm">${product.description}</p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-medium text-gray-900">${product.name}</h3>
+                                <span class="text-primary font-semibold">$${product.price}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${product.sizes.map(size => `
+                                    <span class="text-xs px-2 py-1 bg-gray-100 rounded">${size}</span>
+                                `).join('')}
+                            </div>
+                            <button class="w-full bg-gray-900 text-white py-2 rounded-button font-medium hover:bg-primary transition-colors duration-300">
+                                Add to Cart
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add event listeners
+                    const quickViewButton = productCard.querySelector('.quick-view-button');
+                    quickViewButton.addEventListener('click', () => showQuickView(product));
+                    
+                    const addToCartButton = productCard.querySelector('button:last-child');
+                    addToCartButton.addEventListener('click', () => {
+                        cart.addItem(product);
+                        showToast(`${product.name} added to cart!`);
+                    });
+                    
+                    productGrid.appendChild(productCard);
+                });
+            } else {
+                console.error('Product grid element not found!'); // Debug log
+            }
+
+            // Initialize other features
+            init3DViewer();
+            
+            // Add event listeners for cart and quick view
+            document.getElementById('cartButton')?.addEventListener('click', () => {
+                document.getElementById('cartSidebar').classList.add('open');
+            });
+            
+            document.getElementById('closeCart')?.addEventListener('click', () => {
+                document.getElementById('cartSidebar').classList.remove('open');
+            });
+            
+            document.getElementById('closeQuickView')?.addEventListener('click', () => {
+                const modal = document.getElementById('quickViewModal');
+                modal.classList.remove('open');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            });
+        });
+
+        // Toast notification function
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translate(0)';
+                toast.style.transition = 'transform 0.3s ease-out';
+            });
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translate(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add more products to the existing products array
+        products.push(
+            {
+                id: 5,
+                name: "Premium Wool Coat",
+                price: 299.99,
+                category: "Outerwear",
+                image: "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=500",
+                description: "Luxurious wool blend coat for the perfect winter look",
+                sizes: ["S", "M", "L", "XL"],
+                colors: ["Black", "Camel", "Gray"],
+                material: "Wool Blend"
+            },
+            {
+                id: 6,
+                name: "Designer Blazer",
+                price: 189.99,
+                category: "Formal",
+                image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=500",
+                description: "Modern fit blazer perfect for any occasion",
+                sizes: ["S", "M", "L", "XL"],
+                colors: ["Navy", "Black", "Gray"],
+                material: "Polyester Blend"
+            },
+            {
+                id: 7,
+                name: "Leather Handbag",
+                price: 159.99,
+                category: "Accessories",
+                image: "https://images.unsplash.com/photo-1543076447-215ad9ba6923?w=500",
+                description: "Premium leather handbag with modern design",
+                sizes: ["One Size"],
+                colors: ["Black", "Brown", "Tan"],
+                material: "Genuine Leather"
+            },
+            {
+                id: 8,
+                name: "Sport Sneakers",
+                price: 79.99,
+                category: "Shoes",
+                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+                description: "Comfortable and stylish sneakers for everyday wear",
+                sizes: ["7", "8", "9", "10", "11"],
+                colors: ["White", "Black", "Gray"],
+                material: "Mesh and Synthetic"
+            }
+        );
+    </script>
+</body>
+</html> 
